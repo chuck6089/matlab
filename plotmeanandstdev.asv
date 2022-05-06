@@ -1,0 +1,29 @@
+folder = 'C:\Users\xzd6089\Desktop\try\Darkfield_VW50MP_04052022\04112022\500ms';
+%folder = 'C:\Users\xzd6089\Desktop\try\Darkfield_VW29MP_032022\03292022\10ms';
+userpath(folder);
+fileList = [dir(fullfile(folder, '*.tiff')),dir(fullfile(folder, '*.tif'))];
+fileList = fileList(~[fileList.isdir]);
+[~,idx] = sort([fileList.datenum]);
+fileList = fileList(idx);
+
+n = length(fileList);
+means = zeros(1,n); stdevs = zeros(1,n);
+
+
+for i = 1:n
+    filename = [fileList(i).folder,'\',fileList(i).name];
+    IM = imread(filename);
+    means(i) = mean(double(IM(:)));
+    stdevs(i) = std(double(IM(:)));
+end
+
+x = 1:n;
+
+e = errorbar(x,means,stdevs);
+xlim([0 n+1]); xlabel('Frame#'); ylabel('pixel value');
+e.Marker = '*';
+e.MarkerSize = 10;
+e.Color = 'blue';
+e.CapSize = 15;
+
+saveas(e,[folder,'\Plot.png'])
